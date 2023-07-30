@@ -592,6 +592,123 @@ in the team and keep yourself aligned with the decisions made within the team.
 (使用 因为 cpu 在执行线性的代码时效率更高, 宏可以以loop的生成一条一条指令，避免了)
 (使用 for loop 时 cpu 要不断的跳跃)
 
+# Conditional compilation
+- Conditional compilation is another unique feature of C. It allows you to have
+different preprocessed source code based on different conditions.
+- Despite the
+meaning it implies, the compiler is not doing anything conditionally, but **the
+preprocessed code that is passed to the compiler can be different based on some
+specified conditions.**  These conditions are evaluated by the preprocessor while
+preparing the preprocessed code. There are different directives contributing to
+the conditional compilation. You can see a list of them as follows:
+    - `#ifdef` 
+    - `#ifndef` 
+    - `#else` 
+    - `#elif` 
+    - `#endif` 
+
+- The following example, example 1.7, demonstrates a very basic usage of these
+directives:
+
+
+```c
+#define CONDITION
+int main(int argc, char** argv) {
+#ifdef CONDITION
+    int i = 0;
+    i++;
+#endif
+    int j= 0;
+    return 0;
+}
+```
+- While preprocessing the preceding code, the preprocessor sees the CONDITION
+macro's definition and marks it as **defined** . Note that no value is proposed for
+the **CONDITION macro**  and this is totally valid.
+
+- Then, the preprocessor goes down
+further until it reaches the `#ifdef` statement. Since the CONDITION macro is
+already defined, **all lines between #ifdef and #endif will be copied ** the final
+source code.
+- If the macro was not defined, we wouldn't see any replacement for the `#if-#endif` directives . 
+
+- Macros can be defined using -D options passed to the
+compilation command. Regarding the preceding example, we
+can define the CONDITION macro as follows:
+
+```bash
+$ gcc -DCONDITION -E main.c
+```
+- This is a great feature because it allows you to have macros
+**defined out of source files** .
+
+- This is especially helpful when
+having a single source code but compiling it for different
+architectures, for example, Linux or macOS, which have
+different default macro definitions and libraries.
+
+- One of the very common usages of `#ifndef` is to serve as a `header guard`
+statement. **This statement protects a header file from being included twice**in the
+preprocessing phase, and we can say that almost all C and C++ header files in
+nearly every project have this statement as their first instruction.
+
+- an example on how to use a header guard
+statement. Suppose that this is the content of a header file and by chance, it could
+be included twice in a compilation unit. Note that example 1.8 is just one header
+file and it is not supposed to be compiled:
+
+```c
+#ifndef EXAMPLE_1_8_H
+#define EXAMPLE_1_8_H
+
+void say_hello();
+int read_age();
+
+#endif
+```
+
+- As you see, **all variable and function declarations are put inside the #ifndef and
+#endif pair and they are protected against multiple inclusions by a macro.**  In the
+following paragraph, we explain how.
+
+- As the first inclusion happens, the `EXAMPLE_1_8_H macro ` is not yet defined,
+so the preprocessor continues by entering the `#ifndef-#endif` block.
+
+- The next statement defines the `EXAMPLE_1_8_H macro`, and the preprocessor copies
+everything to the preprocessed code until it reaches the `#endif` directive. 
+
+- As the second inclusion happens, the `EXAMPLE_1_8_H ` macro is already defined, so
+the preprocessor skips all of the content inside the `#ifndef-#endif` section and
+moves to the next statement after `#endif`, if there is any.
+
+- It is a common practice that the whole content of a header file is put between the
+`#ifndef-#endif pair`, and nothing but comments are left outside.
+
+- As a final note in this section, instead of having a pair of `#ifndef-#endif`
+directives, one could use `#pragma once ` in order to protect the header file from
+the **double inclusion issue.** 
+
+- The difference between **conditional directives**  and the **#pragma once directive**  
+is that **the latter is not a C standard** , despite the fact that
+it is supported by almost all C preprocessors. 
+
+- However, it is better to not to use it if portability of your code is a requirement.
+
+- The following code box contains a demonstration on how to use #pragma once in
+example 1.8, instead of #ifndef-#endif directives:
+
+```c
+#pragma once
+
+void say_hello();
+int read_age();
+```
+
+- we close the topic of preprocessor directives while we have demonstrated
+some of their interesting characteristics and various applications. The next
+section is about variable pointers, which are another important feature of C.
+
+
 
 
 
