@@ -1570,6 +1570,134 @@ about function pointers.
 
 ## Function pointers
 
+- Having function pointers is another super feature of the C programming language.
 
+- The two previous sections were about variable pointers and functions,
+and this section is going to combine them and talk about a more interesting topic:
+**pointers to functions**.
+
+
+- They have many applications, but **splitting a large binary into smaller binaries
+and loading them again in another small executable is one of the most important
+applications.** 
+
+- This has led to modularization and software design.
+- Function pointers are building blocks for the implementation of polymorphism in C++ and
+allow us to extend our existing logic.
+- In this section, we are going to cover them and prepare you 
+for more advanced topics we'll cover over the coming chapters.
+
+- Like a variable pointer addressing a variable, a function pointer addresses a
+function and **allows you to call that function indirectly** . The following example,
+example 1.19, can be a good starter for this topic:
+
+```c
+
+#include <stdio.h>
+
+int sum(int a, int b) {
+    return a + b;
+}
+
+int subtract(int a, int b) {
+    return a - b;
+}
+
+int main() {
+
+    int (*func_ptr)(int, int);
+    func_ptr = NULL;
+    func_ptr = &sum;
+    int result = func_ptr(5, 4);
+
+    printf("Sum: %d\n", result);
+    func_ptr = &subtract;
+    result = func_ptr(5, 4);
+    printf("Subtract: %d\n", result);
+
+    return 0;
+}
+```
+
+- In the preceding code box, `func_ptr` is a function pointer.
+- **It can only point to a specific class of functions that match its signature.**
+
+- The signature limits the pointer to only point to functions that accept two integer arguments and return
+an integer result.
+
+As you see, we have defined two functions called sum and subtract matching
+the `func_ptr` pointer's signature.
+
+- The preceding example uses the `func_ptr`
+function pointer to point to the sum and subtract functions separately,
+then call them with the same arguments and compare the results. This is the output of
+the example:
+
+```txt
+Sum: 9
+Subtract: 1
+```
+- As you see in example 1.19, we can call different functions for the same list of
+arguments using a **single function pointer,** 
+
+- and this is an important feature. If you are familiar with object-oriented programming,
+the first thing that comes to mind is **polymorphism**  and **virtual functions.** 
+
+- In fact, this is the only way to support **polymorphism in C**  and **mimic the C++ virtual functions.** 
+
+- We will cover OOP as part of the third part of the book, **Object Orientation** .
+
+-  Like variable pointers, it is important to initialize function pointers properly.
+
+- For those function pointers which are not going to be initialized immediately
+upon declaration,
+- it is mandatory to make them `null`.
+- The nullification of function
+pointers is demonstrated in the preceding example, and it is pretty similar to
+variable pointers.
+
+- It is usually advised to define a new type alias for function pointers.
+- The following example, example 1.20, demonstrates the way it should be done:
+
+
+
+```c
+
+#include <stdio.h>
+
+typedef int bool_t;
+typedef bool_t (*less_than_func_t)(int, int);
+
+bool_t less_than(int a, int b) {
+    return a < b ? 1 : 0;
+}
+bool_t less_than_modular(int a, int b) {
+    return (a % 5) < (b % 5) ? 1 : 0;
+}
+int main(int argc, char** argv) {
+    less_than_func_t func_ptr = NULL;
+    func_ptr = &less_than;
+    bool_t result = func_ptr(3, 7);
+    printf("%d\n", result);
+    func_ptr = &less_than_modular;
+    result = func_ptr(3, 7);
+    printf("%d\n", result);
+    return 0;
+}
+
+```
+
+- The typedef keyword allows you to **define an alias** for an already defined type.
+
+- There are two new type aliases in the preceding example:
+`bool_t`, which is an alias for the `int` type,
+and the `less_than_func_t` type, which is an alias type for the `function pointer type`,
+`bool_t (*)(int, int).`
+
+- These aliases add readability
+to the code and let you choose a shorter name for a long and complex type.
+
+- In C, the name of a new type usually ends with `_t` by convention, and you can find
+this convention in many other standard type aliases such as `size_t` and `time_t`.
 
 
