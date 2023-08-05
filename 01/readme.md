@@ -1849,8 +1849,10 @@ and prints the size and the actual bytes of the variable in the memory. This way
 we can observe the memory layout of the variable:
 
 ```c
+
 #include <stdio.h>
 
+// creating a new struct
 struct sample_t {
     char first;
     char second;
@@ -1858,26 +1860,54 @@ struct sample_t {
     short fourth;
 };
 
+
+// print out the size of the struct
 void print_size(struct sample_t* var) {
     printf("Size: %lu bytes\n", sizeof(*var));
 }
 
+
+// print out the bytes of the struct
 void print_bytes(struct sample_t* var) {
+
     unsigned char* ptr = (unsigned char*)var;
+
     for (int i = 0; i < sizeof(*var); i++, ptr++) {
         printf("%d ", (unsigned int)*ptr);
     }
+
     printf("\n");
 }
 
 int main(int argc, char** argv) {
+
     struct sample_t var;
-    var.first = 'A';
-    var.second = 'B';
-    var.third = 'C';
+                            // 二进制    十进制  十六进制    字符
+
+    var.first = 'A';        // 01000001   65       41          A
+    printf("char A is %lu  bytes\n", sizeof(var.first));
+
+
+
+    var.second = 'B';       // 01000010   66       42          B
+    printf("char B is %lu  bytes\n", sizeof(var.second));
+
+    var.third = 'C';        // 01000011   67       43          C
+    printf("char C is %lu  bytes\n", sizeof(var.third));
+
+
     var.fourth = 765;
+    //  765(十进制) -> 2FD(十六进制)
+    //  Little-endian 存储
+    //
+    //  0x02FD = (0x02 * 256) + 0xFD = (2 * 256) + 253 = 512 + 253 = 765.
+    //
+    //  So, in a little-endian system, the memory representation 253 2 corresponds to the short value 765.
+    printf("short 765 is %lu  bytes\n", sizeof(var.fourth));
+
     print_size(&var);
     print_bytes(&var);
+
     return 0;
 }
 
@@ -1929,4 +1959,381 @@ depending upon the host system:
 Size: 6 bytes
 65 66 67 0 253 2
 ```
+
+- As you see in the preceding shell box, `sizeof(sample_t)` has returned **6**  bytes.
+
+- **The memory layout of a structure variable is very similar to an array.** 
+
+- In an array, all elements are adjacent to each other in the memory, and this is the **same**  for
+a structure variable and its field. 
+
+- The **difference**  is that, in an array, all elements
+have the **same type**  and therefore the same size, but this is not the case regarding
+a structure variable.
+
+- **Each field can have a different type** , and hence, **it can have a different size** .
+
+- Unlike an array, the memory size of which is easily calculated,
+
+- the size of a structure variable in the memory depends on a few factors and cannot be easily determined.
+
+- At first, it seems to be easy to guess the size of a structure variable.
+- For the structure in the preceding example, it has four fields, three char fields,
+and one short field.
+
+- With a simple calculation, if we suppose that sizeof(char) is 1
+byte and `sizeof(short)` is **2**  bytes, each variable of the type `sample_t` should
+have **5**  bytes in its memory layout.
+- But when we look at the output, we see that
+**sizeof(sample_t)**  is **6**  bytes. 
+
+- **1 byte more! Why do we have this extra byte?** 
+
+- Again, while looking at the bytes in the memory layout of the structure variable,
+var, we can see that it is a bit different from our expectation which is `65 66 67 253 2`.
+
+
+- For making this clearer and explaining why the size of the structure variable is
+not **5**  bytes, we need to introduce the **memory alignment**  concept.
+
+- The CPU always does all the computations. 
+Besides that, it needs to load values from memory
+before being able to compute anything and needs to store the results back again
+in the memory after a computation.
+
+- Computation is **super-fast**  inside the CPU,
+but the **memory access is very slow in comparison** . 
+- It is important to know **how the CPU interacts with the memory**  because then we can use the knowledge to
+boost a program or debug an issue.
+
+
+- The **CPU usually reads a specific number of bytes in each memory access** .
+
+- This **number of bytes is usually called a `word`.** 
+
+- So, the memory is split into **words**  and **a word is an atomic unit used by the CPU to read from and write to the memory** .
+
+- Word（字）: 在计算机架构中，"word" 是 CPU 从内存中读取或写入的基本数据单位。这是一个固定大小的数据单元，根据 CPU 的体系结构而定，通常在一个内存访问操作中处理。Word 的大小对于特定的计算机系统是固定的，它可以是 2 字节、4 字节、8 字节或其他大小，具体取决于 CPU 的架构。
+
+- 原语（Primitive）：原语是指编程语言或计算机体系结构中的基本操作，通常不能再细分为更小的操作。原语是计算机指令的最小单元，它们可以组合成更复杂的操作或算法。在并发编程中，原语还可以用来实现同步和互斥操作，以确保多个线程或进程之间的正确执行顺序和数据一致性。
+
+- 原子操作（Atomic Operation）：原子操作是指在执行过程中不可中断、不可分割的操作。在多线程或并发环境中，原子操作是确保数据操作的完整性和一致性的重要概念。一个原子操作要么完全执行成功，要么完全不执行，不存在部分执行的情况。原子操作可以由硬件或软件来保证。
+
+- 虽然 "word" 是 CPU 访问内存时的基本数据单位，但它不是原语或原子操作。相反，原子操作通常用于确保在多线程或并发环境中对共享数据的安全访问。原子操作是一种更高级别的概念，涉及到多线程编程或并发编程中的同步和互斥问题，而 "word" 则是计算机体系结构中的基本数据单元。
+
+
+- The actual number of bytes in a word is an architecture-dependent factor.
+
+- For example, in most 64-bit machines, the word size is 32 bits or 4 bytes.
+
+- Regarding the **memory alignment** ,
+
+- we say that **a variable is aligned in the memory if its starting byte is at the beginning of a word** .
+
+- This way, **the CPU can load its value in an optimized number of memory accesses.** 
+
+- Regarding the previous example, example 1.21,
+
+- the first 3 fields, **first, second, and third, are 1 byte each** , 
+
+- and they reside in the first word of the structure's layout, and **they all can be read by just one memory access** .
+
+- About the fourth field, fourth occupies **2**  bytes.
+
+- If we **forget about the memory alignment** , **its first byte will be the last byte of the first word, which makes it unaligned.** 
+
+- If this was the case, the CPU would be required to **make two memory accesses
+together with shifting some bits in order to retrieve the value of the field.** 
+
+- **That is why we see an extra zero after byte 67.**  
+- **The zero byte has been added in order to complete the current word and let the fourth field start in the next word** .
+
+- Here, we say that the first word is padded by one zero byte. The compiler uses
+the padding technique to align values in the memory. 
+
+- Padding is the extra bytes added to match the alignment.
+
+- It is possible to turn off the alignment.
+- In C terminology, we use a more specific term for aligned structures. 
+We say that **the structure is not packed** .
+Packed structures are not aligned and using them may lead to binary incompatibilities
+and performance degradation. 
+- You can easily define a structure that is packed.
+
+- We will do it in the next example, example 1.22, which is pretty similar to the
+previous example, example 1.21. The `sample_t` structure is packed in this
+example. The following code box shows example 1.22. Note that the similar code
+are replaced by ellipses:
+
+
+
+
+
+```c
+#include <stdio.h>
+
+// creating a new struct
+
+struct  __attribute__((__packed__)) sample_t {
+    char first;
+    char second;
+    char third;
+    short fourth;
+};
+
+// print out the size of the **PACKED** struct
+void print_size(struct sample_t* var) {
+    printf("Size: %lu bytes\n", sizeof(*var));
+}
+
+
+// print out the bytes of the struct
+void print_bytes(struct sample_t* var) {
+
+    unsigned char* ptr = (unsigned char*)var;
+
+    for (int i = 0; i < sizeof(*var); i++, ptr++) {
+        printf("%d ", (unsigned int)*ptr);
+    }
+
+    printf("\n");
+}
+
+int main(int argc, char** argv) {
+
+    struct sample_t var;
+
+                            // 二进制    十进制  十六进制    字符
+
+    var.first = 'A';        // 01000001   65       41          A
+    printf("char A is %lu  bytes\n", sizeof(var.first));
+
+    var.second = 'B';       // 01000010   66       42          B
+    printf("char B is %lu  bytes\n", sizeof(var.second));
+
+    var.third = 'C';        // 01000011   67       43          C
+    printf("char C is %lu  bytes\n", sizeof(var.third));
+
+    var.fourth = 765;
+    //  765(十进制) -> 2FD(十六进制)
+    //  Little-endian 存储
+    //
+    //  0x02FD = (0x02 * 256) + 0xFD = (2 * 256) + 253 = 512 + 253 = 765.
+    //
+    //  So, in a little-endian system, the memory representation 253 2 corresponds to the short value 765.
+
+    printf("short 765 is %lu  bytes\n", sizeof(var.fourth));
+
+    print_size(&var);
+
+    print_bytes(&var);
+
+    return 0;
+}
+
+```
+
+
+- As you see in Shell Box 1-14, the printed size is exactly what we were expecting as
+part of example 1.21.
+
+- The final layout is also matched with our expectation.
+Packed structures are usually used in memory-constrained environments, but they can
+**have a huge negative impact on the performance on most architectures** . 
+
+- Only **new CPUs**  can handle reading an unaligned value from multiple words without
+enforcing extra cost. **Note that memory alignment is enabled by default.**
+
+## Nested structures
+- As we have explained in the previous sections, in general, we have two kinds of
+data types in C.
+
+- There are the types that are **primitive** to the language 
+
+- and there are types which are **defined by the programmers**  using the `struct` keyword. 
+The **former types are PDTs, and the latter are UDTs** .
+
+- So far, our structure examples have been about UDTs (structures) made up
+of only PDTs. 
+- But in this section, we are going to give an example of UDTs (structures) that are made from other UDTs (structures). 
+
+- These are called complex data types, which are the result of nesting a few structures.
+
+- Let's begin with the example, example 1.23:
+
+```c
+
+typedef struct {
+    int x;
+    int y;
+} point_t;
+
+typedef struct {
+    point_t center;
+    int radius;
+} circle_t;
+
+typedef struct {
+    point_t start;
+    point_t end;
+} line_t;
+
+
+```
+
+- In the preceding code box, we have three structures; `point_t`, `circle_t`, and
+`line_t`. The `point_t` structure is a simple UDT because it is made up of only
+PDTs, but other structures contain a variable of the `point_t` type, which makes them complex UDTs.
+
+- The size of a complex structure is calculated exactly the same as a simple
+structure, by summing up the sizes of all its fields. We should be still careful
+about the alignment, of course, because it can affect the size of a complex
+structure.
+
+- So, `sizeof(point_t)` would be 8 bytes if `sizeof(int)` is 4 bytes.
+Then, `sizeof(circle_t)` is 12 bytes and `sizeof(line_t)` is 16 bytes.
+
+- It is common to call structure variables objects.
+They are exactly analogous(类似) to objects in object-oriented programming,
+and we will see that they can encapsulate(封装) both values and
+functions. So, it is not wrong at all to call them C objects.
+
+
+## Structure pointers
+
+- Like pointers to PDTs, we can have pointers to UDTs as well.
+
+- They work exactly the same as PDT pointers. They point to an address in memory, and you can
+do arithmetic on them just like with the PDT pointers.
+
+- UDT pointers also have arithmetic step sizes equivalent to the size of the UDT.
+If you don't know anything about the pointers or the allowed arithmetic operations on them, please
+go to the Pointers section and give it a read.
+
+- It is important to know that **a structure variable points to the address of the first field of the structure variable.**  
+
+
+- In the previous example, example 1.23, a pointer of type `point_t` would point to the address of its first field, 
+`x.` This is also true for the type, `circle_t`. 
+
+- A pointer of type `circle_t` would point to its first field,
+center, and since it is actually a `point_t` object, it would point to the address
+of the first field, x, in the `point_t` type. Therefore, we can have 3 different
+pointers addressing the same cell in the memory. The following code will
+demonstrate this:
+
+```c
+#include <stdio.h>
+
+typedef struct {
+    int x;
+    int y;
+} point_t;
+
+typedef struct {
+    point_t center;
+    int radius;
+} circle_t;
+
+int main(int argc, char** argv) {
+
+    circle_t c;
+
+    circle_t* p1 = &c;
+    point_t*  p2 = (point_t*)&c;
+
+    int* p3 = (int*)&c;
+
+    printf("p1: %p\n", (void*)p1);
+    printf("p2: %p\n", (void*)p2);
+    printf("p3: %p\n", (void*)p3);
+
+    return 0;
+}
+
+```
+
+
+
+```bash
+$ gcc struct_ptr.c -o struct_ptr && ./struct_ptr
+p1: 0x7ffcb8c5d2ec
+p2: 0x7ffcb8c5d2ec
+p3: 0x7ffcb8c5d2ec
+
+```
+- As you see, all of the pointers are addressing the same byte, but their types are
+different.
+- AThis is usually used to extend structures coming from other libraries by
+adding more fields.
+- This is also **the way we implement inheritance in C** .
+- We will discuss this in Chapter 8, Inheritance and Polymorphism.
+
+- This was the last section in this chapter. In the upcoming chapter, we will dive
+into the C compilation pipeline and how to properly compile and link a C project.
+
+
+
+
+## Summary
+
+In this chapter, we revisited some of the important features of the C
+programming language. We tried to go further and show the design aspects
+of these features and the concepts behind them. Of course, the proper use of a
+feature requires a deeper insight into the different aspects of that feature. As part
+of this chapter, we discussed the following:
+
+
+• We talked about the C preprocessing phase and how various directives
+can influence the preprocessor to act differently or generate a specific C
+code for us.
+
+• Macros and the macro expansion mechanism allow us to generate C code
+before passing the translation unit to the compilation phase.
+
+• Conditional directives allow us to alter the preprocessed code based
+on certain conditions and allow us to have different code for different
+situations.
+
+• We also looked at variable pointers, and how they are employed in C.
+
+• We introduced generic pointers and how we can have a function that
+accepts any kind of pointer.
+
+• We discussed some issues such as segmentation faults and dangling
+pointers to show a few disastrous situations that can arise from misusing
+pointers.
+
+• Functions were discussed next, and we reviewed their syntax.
+
+• We explored functions' design aspects and how they contribute to a nicely
+shaped procedural C program.
+
+• We also explained the function call mechanism and how arguments are
+passed to a function using stack frames.
+
+• Function pointers were explored in this chapter. The powerful syntax of
+function pointers allows us to store logics in variable-like entities and use
+them later. They are, in fact, the fundamental mechanism that every single
+program uses today to be loaded and operate.
+
+• Structures together with function pointers gave rise to encapsulation in C.
+We speak more about this in the third part of the book, Object Orientation.
+
+• We tried to explain the design aspects of structures and their effect on the
+way we design programs in C.
+
+• We also discussed the memory layout of structure variables and how they
+are placed inside memory to maximize CPU utilization.
+
+• Nested structures were also discussed. We also took a look inside the
+complex structure variables and discussed how their memory layout
+should look.
+
+• As the final section in this chapter, we talked about structure pointers.
+
+The next chapter will be our first step in building a C project. The C compilation
+pipeline and linking mechanism will be discussed as part of the next chapter.
+Reading it thoroughly will be essential to continue with the book and proceed to
+further chapters.
 
