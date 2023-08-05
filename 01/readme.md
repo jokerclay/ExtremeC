@@ -1700,4 +1700,233 @@ to the code and let you choose a shorter name for a long and complex type.
 - In C, the name of a new type usually ends with `_t` by convention, and you can find
 this convention in many other standard type aliases such as `size_t` and `time_t`.
 
+## Structures
+
+- From the design perspective, structures are one of the most fundamental concepts
+in C.
+- Nowadays, they are not unique to C, and you can find their twin concepts
+nearly in every modern programming language.
+
+- But we should discuss them in the history of computation when there were no
+other programming languages offering such a concept.
+- Among many efforts to move away from machine-level programming languages, introducing structures
+was a great step toward having encapsulation in a programming language. 
+- For thousands of years, the way we think hasn't changed a lot, and encapsulation(封装) has
+been a centric means for our logical reasoning.
+
+- But it was just after C that we finally had some tool, in this case, a programming
+language, which was able to understand the way we think and could store
+and process the building blocks of our reasoning.k
+- Finally, we got a language that resembles(类似于) our thoughts and ideas, and all of this happened when we got
+structures. 
+- C structures weren't perfect in comparison to the encapsulation 
+mechanisms (封装机制) found in modern languages, but they were enough for us to build a
+platform upon which to create our finest tools.
+
+## Why structures?
+- You know that every programming language has some **Primitive Data Types (PDTs).** 
+
+- Using these PDTs, you can design your data structures and write your
+algorithms around them.
+
+- These PDTs are part of the programming language, and they cannot be changed or removed.
+As an example, you cannot have C without the primitive types, int and double.
+
+- Structures come into play when you need to **have your own defined data types** ,
+and the data types in the language are not enough.
+
+- **User-Defined Types (UDTs)**  are those types which are created by the user and they are not part of the language.
+
+- Note that UDTs are different from the types you could define using typedef.
+The keyword typedef doesn't really create a new type, but rather it defines an alias
+or synonym for an already defined type. 
+
+- **But structures allow you to introduce totally new UDTs into your program.**
+
+- Structures have twin concepts in other programming languages,
+
+- for example, classes in C++ and Java or packages in Perl. They are considered to be the typemakers in these languages.
+
+## Why user-defined types ?
+
+- So, why do we need to create new types in a program? 
+- The answer to this question reveals 
+**the principles behind software design and the methods we use for our daily software development.**
+**We create new types because we do it every day using our brains in a routine analysis.** 
+
+- We don't look at our surroundings as integers, doubles, or characters.
+We have learned to group related attributes under the same object.
+- We will discuss more the way we analyze our surroundings in Chapter 6, OOP and Encapsulation.
+- But as an answer to our starting question,
+- **we need new types because we use them to analyze our problems at a higher level of logic, close enough to our human logic.** 
+
+- Here, you need to become familiar with the term business logic.
+- Business logic is a set of all entities and regulations found in a business.
+
+- For example, in the business logic of a banking system, you face concepts such as client, account,
+balance, money, cash, payment, and many more, which are there to make
+operations such as money withdrawal possible and meaningful.
+
+- Suppose that you had to explain some banking logic in pure integers, floats, or
+characters. It is almost impossible. If it is possible for programmers, it is almost
+meaningless to business analysts. 
+
+- In a real software development environment that
+has a well-defined business logic, programmers and business analysts cooperate
+closely. Therefore, they need to have a shared set of terminology, glossary, types,
+operations, regulations, logic, and so on.
+
+- Today, a programming language that does not support new types in its type
+system can be considered as a dead language.
+
+- Maybe that's why most people see C as a dead programming language, mainly because they cannot easily
+define their new types in C, and they prefer to move to a higher-level language
+such as C++ or Java. 
+- Yes, it's not that easy to create a nice type system in C, but everything you need is present there.
+
+- Even today, there can be many reasons behind choosing C as the project's main
+language and accepting the efforts of creating and maintaining a nice type system
+in a C project and even today many companies do that.
+
+- Despite the fact that we need new types in our daily software analysis, CPUs
+do not understand these new types. CPUs try to stick to the PDTs and fast
+calculations because they are designed to do that. So, if you have a program
+written in your high-level language, it should be translated to CPU level
+instructions, and this may cost you more time and resources.
+
+- In this sense, fortunately, C is not very far away from the CPU-level logic, and it
+has a type system which can be easily translated. You may have heard that C is
+a low-level or hardware-level programming language.
+This is one of the reasons
+why some companies and organizations try to write and maintain their core
+frameworks in C, even today.
+
+## What do structures do?
+
+- Structures encapsulate related values under a single unified type.
+As an early example, we can group red, green, and blue variables under a new single
+data type called `color_t`.
+
+- The new type, `color_t` , can represent an RGB color
+in various programs like an image editing application. We can define the
+corresponding C structure as follows:
+
+
+
+```c
+struct color_t {
+    int red;
+    int green;
+    int blue;
+};
+
+```
+
+- As we said before, structures do encapsulation.
+- Encapsulation is one of the most fundamental concepts in software design.
+- It is about grouping and encapsulating related fields under a new type.
+- Then, we can use this new type to define the required variables.
+- We will describe encapsulation thoroughly in Chapter 6, OOP and Encapsulation, while talking about object-oriented design.
+
+- **Note that we use an _t suffix for naming new data types.**
+
+
+## Memory layout
+
+It is usually important to C programmers to know exactly the memory layout of
+a structure variable.
+- Having a bad layout in memory could cause performance
+degradations in certain architectures.
+- Don't forget that we code to produce the instructions for the CPU.
+The values are stored in the memory, and the CPU
+should be able to read and write them fast enough.
+- Knowing the memory layout helps a developer to understand the way the CPU works and to adjust their code
+to gain a better result.
+
+- The following example, example 1.21, defines a new structure type, `sample_t`, and
+declares one structure variable, `var`. Then, it populates its fields with some values
+and prints the size and the actual bytes of the variable in the memory. This way,
+we can observe the memory layout of the variable:
+
+```c
+#include <stdio.h>
+
+struct sample_t {
+    char first;
+    char second;
+    char third;
+    short fourth;
+};
+
+void print_size(struct sample_t* var) {
+    printf("Size: %lu bytes\n", sizeof(*var));
+}
+
+void print_bytes(struct sample_t* var) {
+    unsigned char* ptr = (unsigned char*)var;
+    for (int i = 0; i < sizeof(*var); i++, ptr++) {
+        printf("%d ", (unsigned int)*ptr);
+    }
+    printf("\n");
+}
+
+int main(int argc, char** argv) {
+    struct sample_t var;
+    var.first = 'A';
+    var.second = 'B';
+    var.third = 'C';
+    var.fourth = 765;
+    print_size(&var);
+    print_bytes(&var);
+    return 0;
+}
+
+```
+
+-  The thirst to know the exact memory layout of everything is a bit C/C++ specific,
+and vanishes(消失) as the programming languages become high level.
+
+- For example, in Java and Python, the programmers tend to know less about the very low-level
+memory management details, and on the other hand, these languages don't
+provide many details about the memory.
+
+- As you see in Code Box 1-34, in C, you have to use the struct keyword before
+declaring a structure variable. Therefore, in the preceding example we have
+struct `sample_t` var, which shows how you should use the keyword before
+the structure type in the declaration clause.
+
+- It is trivial to mention that you need
+to use a `.` (dot) to access the fields of a structure variable.
+
+- If it is a structure pointer, you need to use `->` (arrow) to access its fields.
+
+- In order to prevent typing a lot of structs throughout the code, while defining
+a new structure type and while declaring a new structure variable, we could use
+typedef to define a new alias type for the structure. Following is an example:
+
+```c
+typedef struct {
+    char first;
+    char second;
+    char third;
+    short fourth;
+} sample_t;
+```
+
+
+Now, you can declare the variable without using the keyword struct:
+
+
+```c
+sample_t var;
+```
+- The following is the output of the preceding example after being compiled and
+executed on a macOS machine. Note that the numbers generated may vary
+depending upon the host system:
+
+
+```c
+Size: 6 bytes
+65 66 67 0 253 2
+```
 
