@@ -2284,53 +2284,53 @@ feature requires a deeper insight into the different aspects of that feature. As
 of this chapter, we discussed the following:
 
 
-• We talked about the C preprocessing phase and how various directives
+- We talked about the C preprocessing phase and how various directives
 can influence the preprocessor to act differently or generate a specific C
 code for us.
 
-• Macros and the macro expansion mechanism allow us to generate C code
+- Macros and the macro expansion mechanism allow us to generate C code
 before passing the translation unit to the compilation phase.
 
-• Conditional directives allow us to alter the preprocessed code based
+- Conditional directives allow us to alter the preprocessed code based
 on certain conditions and allow us to have different code for different
 situations.
 
-• We also looked at variable pointers, and how they are employed in C.
+- We also looked at variable pointers, and how they are employed in C.
 
-• We introduced generic pointers and how we can have a function that
+- We introduced generic pointers and how we can have a function that
 accepts any kind of pointer.
 
-• We discussed some issues such as segmentation faults and dangling
+- We discussed some issues such as segmentation faults and dangling
 pointers to show a few disastrous situations that can arise from misusing
 pointers.
 
-• Functions were discussed next, and we reviewed their syntax.
+- Functions were discussed next, and we reviewed their syntax.
 
-• We explored functions' design aspects and how they contribute to a nicely
+- We explored functions' design aspects and how they contribute to a nicely
 shaped procedural C program.
 
-• We also explained the function call mechanism and how arguments are
+- We also explained the function call mechanism and how arguments are
 passed to a function using stack frames.
 
-• Function pointers were explored in this chapter. The powerful syntax of
+- Function pointers were explored in this chapter. The powerful syntax of
 function pointers allows us to store logics in variable-like entities and use
 them later. They are, in fact, the fundamental mechanism that every single
 program uses today to be loaded and operate.
 
-• Structures together with function pointers gave rise to encapsulation in C.
+- Structures together with function pointers gave rise to encapsulation in C.
 We speak more about this in the third part of the book, Object Orientation.
 
-• We tried to explain the design aspects of structures and their effect on the
+- We tried to explain the design aspects of structures and their effect on the
 way we design programs in C.
 
-• We also discussed the memory layout of structure variables and how they
+- We also discussed the memory layout of structure variables and how they
 are placed inside memory to maximize CPU utilization.
 
-• Nested structures were also discussed. We also took a look inside the
+- Nested structures were also discussed. We also took a look inside the
 complex structure variables and discussed how their memory layout
 should look.
 
-• As the final section in this chapter, we talked about structure pointers.
+- As the final section in this chapter, we talked about structure pointers.
 
 The next chapter will be our first step in building a C project. The C compilation
 pipeline and linking mechanism will be discussed as part of the next chapter.
