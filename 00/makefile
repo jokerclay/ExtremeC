@@ -3,30 +3,22 @@ CC := gcc
 CFLAGS := -std=c11 -Wall
 
 # Name of the executable
-TARGET := main
+TARGET := main.exe
 
 # Source files
-SRCS := main.c
+SRCS := main.c 
 
 # Object files
 OBJS := $(SRCS:.c=.o)
 
-# Check for the operating system
-ifeq ($(OS),Windows_NT)
-	RM := del /Q
-	EXE := .exe
-else
-	RM := rm -f
-	EXE :=
-endif
-
 # Rule to build the executable
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET)$(EXE) $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $(OBJS)
 
 # Run target to build and run the program
 run: $(TARGET)
-	./$(TARGET)$(EXE)
+	$(TARGET)
+
 
 # Rule to build object files
 %.o: %.c
@@ -34,5 +26,5 @@ run: $(TARGET)
 
 # Clean rule
 clean:
-	$(RM) $(OBJS) $(TARGET)$(EXE)
+	del $(OBJS) $(TARGET)
 
