@@ -85,9 +85,55 @@ to API, but at a different level.
 their functional cooperation, the ABI guarantees that two programs are compatible at
 the level of their machine-level
 
-- For instance, a program cannot use a dynamic or static library that has ***han that, an executable file (which is, in fact, an object file) cannot be run on a system supporting a different ABI than the
-one that the executable file was built for. A number of vital and obvious system
+- For instance, a program cannot use a dynamic or static library that has han that,
+an executable file (which is, in fact, an object file) cannot be run on a system
+supporting a different ABI than the one that the executable file was built for.
+A number of vital(必不可少的) and obvious system
 functionalities, such as dynamic linking, loading an executable, and function calling
 convention, should be done precisely according to an agreed upon ABI. 
+
+
+- An ABI will typically cover the following things:
+    -  The instruction set of the target architecture, which includes the processor
+    instructions, memory layout, endianness, registers, and so on.
+    - Existing data types, their sizes, and the alignment policy.
+    - The function calling convention describes how functions should be called.
+    For example, subjects like the structure of the stack frame and the pushing
+    order of the arguments are part of it.
+    - Defining how system calls should be called in a Unix-like system.
+    - Used object file format, which we will explain in the following section,
+    for having relocatable, executable, and shared object files.
+    - Regarding object files produced by a C++ compiler, the name mangling,
+    virtual table layout, is part of the ABI.
+
+- The **System V ABI**  is the most widely used ABI standard among Unix-like
+operating systems like Linux and the BSD systems. Executable and Linking
+Format (**ELF** ) is the standard object file format used in the System V ABI.
+
+- Note:
+- The following link is the System V ABI for AMD 64-
+bit architecture: [psABI-x86](https://www.uclibc.org/docs/psABI-x86_64.pdf) .
+You can go through the list of contents and see the areas it covers.
+- In the following section, we will discuss the object file formats, particularly ELF.
+
+### Object file formats
+As we explained in the previous chapter, Chapter 2, Compilation and Linking,
+on a platform, **object files have their own specific format for storing machinelevel instructions.** 
+
+- Note that this is about the structure of object files and this is
+different from the fact that each architecture has its own instruction set.
+
+- As we know from the previous discussion, these two variations are different parts of the
+ABI in a platform; the object file format and the architecture's instruction set.
+
+- In this section, we are going to have a brief look into some widely known object
+file formats. To start with, let's look at some object file formats used in various
+operating systems:
+    - **ELF**     used by Linux and many other Unix-like operating systems
+    - **Mach-O**  used in OS X (macOS and iOS) systems
+    - **PE**  used in Microsoft Windows
+
+
+
 
 
