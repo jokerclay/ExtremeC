@@ -2,3 +2,13 @@
 *.exe
 .vs/
 
+
+# Build directory
+src/build/
+
+# Build tool executable
+nob
+nob.old
+
+# Other compiled objects
+*.obj
