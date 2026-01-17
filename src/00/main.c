@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #define NOB_IMPLEMENTATION
 #include "../nob.h"
 
@@ -13,10 +12,8 @@ int main(void)
 
 #if DEBUG
     nob_log(NOB_INFO, "Using nob_log from nob.h");
-    
 #else 
-    printf("hello world\n");
-
+    printf("Hello World\n");
 #endif // DEBUG
 
     return EXIT_SUCCESS;
